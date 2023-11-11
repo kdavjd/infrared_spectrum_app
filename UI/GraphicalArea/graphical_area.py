@@ -1,7 +1,10 @@
 from PyQt6.QtWidgets import QWidget
+from data_visualizer import DataVisualizer 
 
 class GraphicalArea(QWidget):
     def __init__(self):
         super().__init__()
-        # Инициализация графической области
-        self.setStyleSheet("background-color: lightblue;")
+        self.visualizer = DataVisualizer(self)
+
+    def plot_data(self, data):
+        self.visualizer.plot_data(data)

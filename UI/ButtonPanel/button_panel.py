@@ -1,14 +1,23 @@
-from PyQt6.QtWidgets import QPushButton, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QVBoxLayout, QWidget
+from PyQt6.QtCore import pyqtSignal
+from .load_button import LoadButton
+from .print_button import PrintButton
+from .spectrum_table import SpectrumTable
 
 class ButtonPanel(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, data_visualizer, spectrum_data_frame):
+        super().__init__()        
+        
         layout = QVBoxLayout()
 
-        self.loadButton = QPushButton('Load')
-        self.printButton = QPushButton('Print')
+        self.load_button = LoadButton(spectrum_data_frame)
+        self.print_button = PrintButton(data_visualizer)
+        self.spectrum_table = SpectrumTable()
 
-        layout.addWidget(self.loadButton)
-        layout.addWidget(self.printButton)
-
+        layout.addWidget(self.load_button)
+        layout.addWidget(self.print_button)
+        layout.addWidget(self.spectrum_table)  
+        
         self.setLayout(layout)
+
+        
