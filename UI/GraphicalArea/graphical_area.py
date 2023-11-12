@@ -3,6 +3,8 @@ from PyQt6.QtCore import  pyqtSlot
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
+import scienceplots
+plt.style.use(['science', 'no-latex', 'nature', 'grid'])
 import pandas as pd
 
 class GraphicalArea(QWidget):
@@ -22,6 +24,5 @@ class GraphicalArea(QWidget):
     @pyqtSlot(pd.DataFrame, list)
     def plot_data(self, df, column_names):
         self.ax.clear()
-        self.ax.plot(df[column_names[0]], df[column_names[1]],)
-        self.ax.grid()
+        self.ax.plot(df[column_names[0]], df[column_names[1]],)          
         self.canvas.draw()
