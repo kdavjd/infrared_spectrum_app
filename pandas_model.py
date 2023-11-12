@@ -119,4 +119,4 @@ class PandasModel(QAbstractTableModel):
         Returns:
             Qt.ItemFlags: флаги, определяющие возможности ячейки.
         """
-        return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        return Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable

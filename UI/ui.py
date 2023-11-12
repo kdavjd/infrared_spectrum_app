@@ -4,13 +4,13 @@ from UI.GraphicalArea.graphical_area import GraphicalArea
 from UI.ButtonPanel.button_panel import ButtonPanel
 
 class UI(QWidget):
-    def __init__(self, spectrum_data_frame, data_visualizer):
+    def __init__(self, spectrum_data_frame):
         super().__init__()
         # Установка минимального размера окна
         self.setMinimumSize(QSize(920, 780)) 
         
         self.graphical_area = GraphicalArea()
-        self.button_panel = ButtonPanel(data_visualizer, spectrum_data_frame)
+        self.button_panel = ButtonPanel(spectrum_data_frame)
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(self.button_panel)

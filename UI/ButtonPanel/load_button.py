@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QPushButton
 
 class LoadButton(QPushButton):
     def __init__(self, spectrum_data_frame):
-        super().__init__('Load')
+        super().__init__('Загрузить .txt')
         self.spectrum_data_frame = spectrum_data_frame
         self.clicked.connect(self.on_click)
 

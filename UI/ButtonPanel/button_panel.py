@@ -5,13 +5,13 @@ from .print_button import PrintButton
 from .spectrum_table import SpectrumTable
 
 class ButtonPanel(QWidget):
-    def __init__(self, data_visualizer, spectrum_data_frame):
+    def __init__(self, spectrum_data_frame):
         super().__init__()        
         
         layout = QVBoxLayout()
 
         self.load_button = LoadButton(spectrum_data_frame)
-        self.print_button = PrintButton(data_visualizer)
+        self.print_button = PrintButton()
         self.spectrum_table = SpectrumTable()
 
         layout.addWidget(self.load_button)
