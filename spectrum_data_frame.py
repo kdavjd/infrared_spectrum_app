@@ -9,9 +9,13 @@ class SpectrumDataFrame(QObject):
         super().__init__()
         self.column_names = ["Длина_волны", "Интенсивность"]
         
-    spectrum_loaded = pyqtSignal(pd.DataFrame)
-    plot_spectrum = pyqtSignal(pd.DataFrame, list)
+    spectrum_loaded_signal = pyqtSignal(pd.DataFrame)
+    plot_spectrum_signal = pyqtSignal(pd.DataFrame, list)
     
+    @pyqtSlot()
+    def plot_spectrum(self):
+        self.plot_spectrum_signal.emit(self.df, self.column_names)
+        
     def load_spectrum_txt(self):        
         file_dialog = QFileDialog()
         file_path, _ = file_dialog.getOpenFileName(caption="Open Text File", filter="Text Files (*.txt)")
@@ -19,8 +23,8 @@ class SpectrumDataFrame(QObject):
             try:
                 self.df = pd.read_csv(
                     file_path, delim_whitespace=True, header=None, skiprows=1, names=self.column_names)
-                self.spectrum_loaded.emit(self.df)
-                self.plot_spectrum.emit(self.df, self.column_names)
+                self.spectrum_loaded_signal.emit(self.df)
+                self.plot_spectrum()
                 logger.debug(f"data head {self.df.head()}")
                 return self.df
             except Exception as e:
@@ -51,6 +55,6 @@ class SpectrumDataFrame(QObject):
         filtered_df["Интенсивность"] = filtered_df.apply(
             lambda row: row["Интенсивность"] - (m * row["Длина_волны"] + c) + max_value, axis=1)
         
-        self.plot_spectrum.emit(filtered_df, self.column_names)
+        self.plot_spectrum_signal.emit(filtered_df, self.column_names)
         
        

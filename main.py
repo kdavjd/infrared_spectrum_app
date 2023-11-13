@@ -15,10 +15,11 @@ class Main(QMainWindow):
         self.ui = UI(self.spectrum_data_frame)
         self.setCentralWidget(self.ui)
         self.setWindowTitle('Spectrum Analysis Tool')
-        self.spectrum_data_frame.spectrum_loaded.connect(self.ui.button_panel.spectrum_table.update_table)
-        self.spectrum_data_frame.plot_spectrum.connect(self.ui.graphical_area.plot_data)
-        self.ui.graphical_area.mouse_released.connect(self.spectrum_data_frame.modify_dataframe)
-
+        self.spectrum_data_frame.spectrum_loaded_signal.connect(self.ui.button_panel.spectrum_table.update_table)
+        self.spectrum_data_frame.plot_spectrum_signal.connect(self.ui.graphical_area.plot_data)
+        self.ui.graphical_area.mouse_released_signal.connect(self.spectrum_data_frame.modify_dataframe)
+        self.ui.graphical_area.toolbar.restore_df_plot_signal.connect(self.spectrum_data_frame.plot_spectrum)
+        
 def main():
     app = QApplication(sys.argv)
     main = Main()

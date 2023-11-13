@@ -11,19 +11,26 @@ import pandas as pd
 
 # Определение класса пользовательской панели инструментов для Matplotlib
 class CustomToolbar(NavigationToolbar):
+    restore_df_plot_signal = pyqtSignal()
+    
     def __init__(self, canvas, parent):
         super().__init__(canvas, parent)
-
-        # Путь к иконке для действия расчета интеграла 
+         
         integral_icon_path = 'icons\\integral_icon.png'  
-
+        restore_df_plot_button_icon = 'icons\\restore_df_plot_icon.png'
+        
         # Создание действия (кнопки) интеграции с иконкой
         self.integral_action = QAction(QIcon(integral_icon_path), '', self)
         self.integral_action.setCheckable(True)
         self.integral_action.triggered.connect(self.toggle_integral_mode)
         self.addAction(self.integral_action)
         self.integral_action = False
-
+        
+        self.restore_df_plot_action = QAction(QIcon(restore_df_plot_button_icon), '', self)
+        self.restore_df_plot_action.setCheckable(True)
+        self.restore_df_plot_action.triggered.connect(self.restore_df_plot_button)
+        self.addAction(self.restore_df_plot_action)
+        
     # Метод для переключения режима расчета интеграла 
     def toggle_integral_mode(self):
         self.integral_action = not self.integral_action
@@ -31,12 +38,16 @@ class CustomToolbar(NavigationToolbar):
             # Изменение цвета фона графика
             self.canvas.figure.gca().set_facecolor('white')
             self.canvas.draw()
+            
+    def restore_df_plot_button(self):
+        self.restore_df_plot_signal.emit()
+        
 
 # Определение класса графической области для рисования графиков
 class GraphicalArea(QWidget):
     
     # Определение сигналов
-    mouse_released = pyqtSignal(tuple)
+    mouse_released_signal = pyqtSignal(tuple)
     
     def __init__(self, parent=None):
         super().__init__(parent)        
@@ -106,7 +117,7 @@ class GraphicalArea(QWidget):
 
             # Испускание сигнала с координатами
             if self.press_x is not None and event.xdata is not None:
-                self.mouse_released.emit((self.press_x, event.xdata))
+                self.mouse_released_signal.emit((self.press_x, event.xdata))
     
     # Слот для отображения данных на графике
     @pyqtSlot(pd.DataFrame, list)
