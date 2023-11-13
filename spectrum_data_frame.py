@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QFileDialog
-from PyQt6.QtCore import pyqtSignal, QObject
+from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject
 import pandas as pd
 from logger_config import logger
 
@@ -29,4 +29,28 @@ class SpectrumDataFrame(QObject):
         else:
             logger.info("Файл не выбран")
             return None
+    
+    @pyqtSlot(tuple)
+    def modify_dataframe(self, slice_borders: tuple):
+        logger.debug(f"Получены новые точки диапазона интегрирования: {slice_borders}")
+        lower_bound, upper_bound = sorted(slice_borders)
+        
+        # Фильтрация DataFrame
+        filtered_df = self.df[(self.df["Длина_волны"] >= lower_bound) & (self.df["Длина_волны"] <= upper_bound)].copy()
+        filtered_df["Значение"] = filtered_df["Интенсивность"]
+        # Вычисление уравнения прямой
+        start_point = filtered_df.iloc[0]
+        end_point = filtered_df.iloc[-1]
+        m = (end_point["Значение"] - start_point["Значение"]) / (end_point["Длина_волны"] - start_point["Длина_волны"])
+        c = start_point["Значение"] - m * start_point["Длина_волны"]
+        
+        # Нахождение максимального значения для горизонтальной линии
+        max_value = filtered_df["Значение"].max()
+        
+        # Корректировка значений
+        filtered_df["Интенсивность"] = filtered_df.apply(
+            lambda row: row["Значение"] - (m * row["Длина_волны"] + c) + max_value, axis=1)
+        filtered_df.drop("Значение", axis=1, inplace=True)
+        self.plot_spectrum.emit(filtered_df, self.column_names)
+        
        

@@ -1,6 +1,6 @@
 # Импортируем необходимые библиотеки и компоненты
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QAction, QIcon
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -14,7 +14,7 @@ class CustomToolbar(NavigationToolbar):
     def __init__(self, canvas, parent):
         super().__init__(canvas, parent)
 
-        # Путь к иконке для действия интеграции
+        # Путь к иконке для действия расчета интеграла 
         integral_icon_path = 'icons\\integral_icon.png'  
 
         # Создание действия (кнопки) интеграции с иконкой
@@ -24,7 +24,7 @@ class CustomToolbar(NavigationToolbar):
         self.addAction(self.integral_action)
         self.integral_action = False
 
-    # Метод для переключения режима интеграции
+    # Метод для переключения режима расчета интеграла 
     def toggle_integral_mode(self):
         self.integral_action = not self.integral_action
         if self.integral_action:
@@ -34,9 +34,12 @@ class CustomToolbar(NavigationToolbar):
 
 # Определение класса графической области для рисования графиков
 class GraphicalArea(QWidget):
+    
+    # Определение сигналов
+    mouse_released = pyqtSignal(tuple)
+    
     def __init__(self, parent=None):
-        super().__init__(parent)
-
+        super().__init__(parent)        
         # Создание фигуры и осей для графика
         self.figure, self.ax = plt.subplots()
         self.canvas = FigureCanvas(self.figure)
@@ -100,10 +103,14 @@ class GraphicalArea(QWidget):
             self.shading_regions.clear()
             self.ax.set_xlim(self.original_xlim)
             self.canvas.draw()
+
+            # Испускание сигнала с координатами
+            if self.press_x is not None and event.xdata is not None:
+                self.mouse_released.emit((self.press_x, event.xdata))
     
     # Слот для отображения данных на графике
     @pyqtSlot(pd.DataFrame, list)
-    def plot_data(self, df, column_names):
+    def plot_data(self, df, column_names):        
         self.ax.clear()
         # Построение графика по заданным данным
         self.ax.plot(df[column_names[0]], df[column_names[1]],)          
