@@ -44,19 +44,26 @@ class GraphicalArea(QWidget):
     
     def on_mouse_press(self, event):
         if event.inaxes:
-            if event.button == 3 or event.button == 2: # Правая, средняя кнопка мыши
+            if event.button == 3 or event.button == 2:
                 self.toolbar.deactivate_all_actions()
             if self.toolbar.integral_action.isChecked():
-                if event.button == 1:                  # Левая кнопка мыши
-                    self.integral_callbacks.on_press(event)                               
+                if event.button == 1:
+                    self.integral_callbacks.on_press(event)
+            if self.toolbar.gauss_action.isChecked():
+                if event.button == 1:
+                    self.gauss_callbacks.on_press(event)                            
     
     def on_mouse_move(self, event):
         if self.toolbar.integral_action.isChecked() and self.mouse_pressed and event.xdata and event.inaxes:
             self.integral_callbacks.on_move(event)
+        if self.toolbar.gauss_action.isChecked() and self.mouse_pressed and event.xdata and event.inaxes:
+            self.gauss_callbacks.on_move(event)
     
     def on_mouse_release(self, event):
         if self.toolbar.integral_action.isChecked() and event.inaxes:
             self.integral_callbacks.on_release(event)
+        if self.toolbar.gauss_action.isChecked() and event.inaxes:
+            self.gauss_callbacks.on_release(event)
     
     # Слот для отображения данных на графике
     @pyqtSlot(pd.DataFrame, list)
