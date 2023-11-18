@@ -37,26 +37,22 @@ class SpectrumDataFrame(QObject):
     @pyqtSlot(tuple)
     def subctract_slice_background(self, slice_borders: tuple):
         logger.debug(f"Получены новые точки диапазона интегрирования: {slice_borders}")
-        lower_bound, upper_bound = sorted(slice_borders)
-        
+        lower_bound, upper_bound = sorted(slice_borders)        
         # Фильтрация DataFrame
-        filtered_df = self.df[(self.df["Длина_волны"] >= lower_bound) & (self.df["Длина_волны"] <= upper_bound)].copy()
-        
+        filtered_df = self.df[(self.df["Длина_волны"] >= lower_bound) & (self.df["Длина_волны"] <= upper_bound)].copy()        
         # Вычисление уравнения прямой
         start_point = filtered_df.iloc[0]
         end_point = filtered_df.iloc[-1]
-        m = (end_point["Интенсивность"] - start_point["Интенсивность"]) / (end_point["Длина_волны"] - start_point["Длина_волны"])
-        c = start_point["Интенсивность"] - m * start_point["Длина_волны"]
-        
+        m = ((end_point["Интенсивность"] - start_point["Интенсивность"]) 
+             / (end_point["Длина_волны"] - start_point["Длина_волны"]))
+        c = start_point["Интенсивность"] - m * start_point["Длина_волны"]        
         # Нахождение максимального значения для горизонтальной линии
-        max_value = filtered_df["Интенсивность"].max()
-        
+        max_value = filtered_df["Интенсивность"].max()        
         # Выравнивание и вычитание фона
         filtered_df["Интенсивность"] = filtered_df.apply(
-            lambda row: row["Интенсивность"] - (m * row["Длина_волны"] + c) + max_value, axis=1)
-        
+            lambda row: row["Интенсивность"] - (m * row["Длина_волны"] + c) + max_value, axis=1)        
         filtered_df["Интенсивность"] = filtered_df["Интенсивность"] + (100 - filtered_df["Интенсивность"].max())
-        
+        filtered_df["Интенсивность"] = filtered_df["Интенсивность"] - filtered_df["Интенсивность"].max()        
         self.plot_spectrum_signal.emit(filtered_df, self.column_names)
         
        

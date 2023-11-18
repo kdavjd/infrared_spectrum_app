@@ -27,7 +27,7 @@ class CustomToolbar(NavigationToolbar):
         self.integral_action = False
         
         self.restore_df_plot_action = QAction(QIcon(restore_df_plot_button_icon), '', self)
-        self.restore_df_plot_action.setCheckable(True)
+        self.restore_df_plot_action.setCheckable(False)
         self.restore_df_plot_action.triggered.connect(self.restore_df_plot_button)
         self.addAction(self.restore_df_plot_action)
         
