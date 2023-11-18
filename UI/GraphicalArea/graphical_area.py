@@ -6,6 +6,7 @@ import scienceplots
 import pandas as pd
 from .custom_toolbar import CustomToolbar
 from .integral_action_callbacks import IntegralActionCallbacks
+from .gauss_action_callbacks import GaussActionCallbacks
 from logger_config import logger
 plt.style.use(['science', 'no-latex', 'nature', 'grid'])
 
@@ -24,7 +25,7 @@ class GraphicalArea(QWidget):
         self.toolbar = CustomToolbar(self.canvas, self)
         # настройка поведения кастомных действий панели инструментов
         self.integral_callbacks = IntegralActionCallbacks(self)
-        #self.gauss_callbacks = GaussActionHandler(self)
+        self.gauss_callbacks = GaussActionCallbacks(self)
         # Инициализация переменных для управления затенением и масштабом
         self.shading_regions = []  # Список для хранения затемненных областей
         self.original_xlim = None  # Исходный масштаб оси X
@@ -42,13 +43,12 @@ class GraphicalArea(QWidget):
         self.setLayout(layout)
     
     def on_mouse_press(self, event):
-        if self.toolbar.integral_action.isChecked() and event.inaxes:
-            if event.button == 1:   # Левая кнопка мыши
-                self.integral_callbacks.on_press(event)
-            elif event.button == 3: # Правая кнопка мыши
+        if event.inaxes:
+            if event.button == 3 or event.button == 2: # Правая, средняя кнопка мыши
                 self.toolbar.deactivate_all_actions()
-            else:
-                logger.warning("Непредвиденное поведение в on_mouse_press")
+            if self.toolbar.integral_action.isChecked():
+                if event.button == 1:                  # Левая кнопка мыши
+                    self.integral_callbacks.on_press(event)                               
     
     def on_mouse_move(self, event):
         if self.toolbar.integral_action.isChecked() and self.mouse_pressed and event.xdata and event.inaxes:
