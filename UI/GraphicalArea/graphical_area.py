@@ -12,37 +12,43 @@ import pandas as pd
 # Определение класса пользовательской панели инструментов для Matplotlib
 class CustomToolbar(NavigationToolbar):
     restore_df_plot_signal = pyqtSignal()
+    gauss_action_signal = pyqtSignal()
     
     def __init__(self, canvas, parent):
         super().__init__(canvas, parent)
-         
-        integral_icon_path = 'icons\\integral_icon.png'  
-        restore_df_plot_button_icon = 'icons\\restore_df_plot_icon.png'
-        
-        # Создание действия (кнопки) интеграции с иконкой
-        self.integral_action = QAction(QIcon(integral_icon_path), '', self)
-        self.integral_action.setCheckable(True)
-        self.integral_action.triggered.connect(self.toggle_integral_mode)
-        self.addAction(self.integral_action)
-        self.integral_action = False
-        
-        self.restore_df_plot_action = QAction(QIcon(restore_df_plot_button_icon), '', self)
-        self.restore_df_plot_action.setCheckable(False)
-        self.restore_df_plot_action.triggered.connect(self.restore_df_plot_button)
-        self.addAction(self.restore_df_plot_action)
-        
-    # Метод для переключения режима расчета интеграла 
-    def toggle_integral_mode(self):
-        self.integral_action = not self.integral_action
-        if self.integral_action:
-            # Изменение цвета фона графика
-            self.canvas.figure.gca().set_facecolor('white')
-            self.canvas.draw()
-            
-    def restore_df_plot_button(self):
-        self.restore_df_plot_signal.emit()
-        
+        self.create_actions()
 
+    def create_actions(self):
+        self.integral_action = self.add_action('icons\\integral_icon.png', 'integral')
+        self.restore_df_plot_action = self.add_action('icons\\restore_df_plot_icon.png', 'df_plot', False)
+        self.gauss_action = self.add_action('icons\\gauss_icon.png', 'gauss')
+
+    def add_action(self, icon_path, action_name, checkable=True):
+        action = QAction(QIcon(icon_path), '', self)
+        action.setCheckable(checkable)
+        action.triggered.connect(lambda: self.toggle_action(action_name))
+        self.addAction(action)
+        return action
+
+    def toggle_action(self, action_name):
+        if action_name == 'integral':
+            self.activate_action(self.integral_action, [self.gauss_action])
+        elif action_name == 'gauss':
+            self.activate_action(self.gauss_action, [self.integral_action])
+        elif action_name == 'df_plot':
+            self.restore_df_plot_signal.emit()
+            self.deactivate_all_actions()
+
+    def activate_action(self, active_action, other_actions):
+        active_action.setChecked(True)
+        for action in other_actions:
+            action.setChecked(False)
+
+    def deactivate_all_actions(self):
+        self.integral_action.setChecked(False)
+        self.gauss_action.setChecked(False)
+
+        
 # Определение класса графической области для рисования графиков
 class GraphicalArea(QWidget):
     
@@ -114,7 +120,6 @@ class GraphicalArea(QWidget):
             self.shading_regions.clear()
             self.ax.set_xlim(self.original_xlim)
             self.canvas.draw()
-
             # Испускание сигнала с координатами
             if self.press_x is not None and event.xdata is not None:
                 self.mouse_released_signal.emit((self.press_x, event.xdata))
