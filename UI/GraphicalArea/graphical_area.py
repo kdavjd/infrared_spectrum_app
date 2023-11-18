@@ -1,55 +1,13 @@
-# Импортируем необходимые библиотеки и компоненты
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtCore import pyqtSlot, pyqtSignal
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
 import scienceplots
-plt.style.use(['science', 'no-latex', 'nature', 'grid'])
 import pandas as pd
+from .custom_toolbar import CustomToolbar 
+plt.style.use(['science', 'no-latex', 'nature', 'grid'])
+       
 
-# Определение класса пользовательской панели инструментов для Matplotlib
-class CustomToolbar(NavigationToolbar):
-    restore_df_plot_signal = pyqtSignal()
-    gauss_action_signal = pyqtSignal()
-    
-    def __init__(self, canvas, parent):
-        super().__init__(canvas, parent)
-        self.create_actions()
-
-    def create_actions(self):
-        self.integral_action = self.add_action('icons\\integral_icon.png', 'integral')
-        self.restore_df_plot_action = self.add_action('icons\\restore_df_plot_icon.png', 'df_plot', False)
-        self.gauss_action = self.add_action('icons\\gauss_icon.png', 'gauss')
-
-    def add_action(self, icon_path, action_name, checkable=True):
-        action = QAction(QIcon(icon_path), '', self)
-        action.setCheckable(checkable)
-        action.triggered.connect(lambda: self.toggle_action(action_name))
-        self.addAction(action)
-        return action
-
-    def toggle_action(self, action_name):
-        if action_name == 'integral':
-            self.activate_action(self.integral_action, [self.gauss_action])
-        elif action_name == 'gauss':
-            self.activate_action(self.gauss_action, [self.integral_action])
-        elif action_name == 'df_plot':
-            self.restore_df_plot_signal.emit()
-            self.deactivate_all_actions()
-
-    def activate_action(self, active_action, other_actions):
-        active_action.setChecked(True)
-        for action in other_actions:
-            action.setChecked(False)
-
-    def deactivate_all_actions(self):
-        self.integral_action.setChecked(False)
-        self.gauss_action.setChecked(False)
-
-        
-# Определение класса графической области для рисования графиков
 class GraphicalArea(QWidget):
     
     # Определение сигналов
