@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QTableWidget, QTableView, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QTableView, QSizePolicy, QAbstractScrollArea
 from PyQt6.QtCore import  pyqtSlot
 from pandas_model import PandasModel
 import pandas as pd
@@ -7,6 +7,8 @@ from logger_config import logger
 class SpectrumTable(QTableView):
     def __init__(self):
         super().__init__()
+        self.setFixedHeight(300)
+        #self.setVerticalScrollBarPolicy(QAbstractScrollArea.ScrollBarPolicy.ScrollBarAlwaysOff)
 
     @pyqtSlot(pd.DataFrame)
     def update_table(self, dataframe):
