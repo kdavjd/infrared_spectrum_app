@@ -1,5 +1,6 @@
 from PyQt6.QtCore import Qt, QAbstractTableModel, pyqtSignal
-
+from logger_config import logger
+import pandas as pd
 
 class PandasModel(QAbstractTableModel):
     """
@@ -9,7 +10,7 @@ class PandasModel(QAbstractTableModel):
         data_changed_signal (pyqtSignal): Сигнал изменения данных.
     """
     
-    data_changed_signal = pyqtSignal()
+    data_changed_signal = pyqtSignal(pd.DataFrame)
 
     def __init__(self, data, parent=None):
         """
@@ -100,10 +101,11 @@ class PandasModel(QAbstractTableModel):
         col = index.column()
 
         try:            
-            converted_value = str(value).replace(',', '.')
+            converted_value = float(str(value).replace(',', '.'))
             self._data.iat[row, col] = converted_value
             self.dataChanged.emit(index, index, [role])
-            self.data_changed_signal.emit()
+            self.data_changed_signal.emit(self._data)            
+            logger.debug(f"Данные изменены в строке {row}, столбце {col}: {converted_value}")
             return True
         except Exception as e:
             print(f"Error setting data: {e}")

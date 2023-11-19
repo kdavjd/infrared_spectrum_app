@@ -1,7 +1,7 @@
 class IntegralActionCallbacks:
     def __init__(self, graphical_area):
         self.graphical_area = graphical_area
-
+        
     def on_press(self, event):
         self.graphical_area.mouse_pressed = True
         self.graphical_area.press_x = event.xdata

@@ -4,15 +4,15 @@ from UI.ui import UI
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from spectrum_data_frame import SpectrumDataFrame
-
+from config import SpectrumConfig
 from logger_config import logger
 
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.spectrum_data_frame = SpectrumDataFrame()      
-        
-        self.ui = UI(self.spectrum_data_frame)        
+        self.spectrum_data_frame = SpectrumDataFrame()     
+        self.config = SpectrumConfig()
+        self.ui = UI(self.spectrum_data_frame, self.config)        
         self.setCentralWidget(self.ui)
         self.setWindowTitle('Spectrum Analysis Tool')
         self.spectrum_data_frame.spectrum_loaded_signal.connect(
@@ -26,8 +26,7 @@ class Main(QMainWindow):
         self.ui.graphical_area.toolbar.restore_df_plot_signal.connect(
             self.spectrum_data_frame.plot_spectrum)
         self.ui.graphical_area.toolbar.restore_df_plot_signal.connect(
-            self.ui.graphical_area.gauss_callbacks.reset_gaussian_params)
-        
+            self.ui.graphical_area.gauss_callbacks.reset_gaussian_params) 
         
 def main():
     app = QApplication(sys.argv)

@@ -5,7 +5,7 @@ from .print_button import PrintButton
 from .spectrum_table import SpectrumTable
 
 class ButtonPanel(QWidget):
-    def __init__(self, spectrum_data_frame):
+    def __init__(self, spectrum_data_frame, config):
         super().__init__()
 
         # Создаем макет для кнопок
@@ -21,7 +21,7 @@ class ButtonPanel(QWidget):
 
         # Создаем макет для таблицы
         table_layout = QVBoxLayout()
-        self.spectrum_table = SpectrumTable()
+        self.spectrum_table = SpectrumTable(config)
         table_layout.addWidget(self.spectrum_table)
 
         # Создаем основной макет

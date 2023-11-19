@@ -4,6 +4,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 import scienceplots
 import pandas as pd
+from scipy import signal
+from config import SpectrumConfig
 from .custom_toolbar import CustomToolbar
 from .integral_action_callbacks import IntegralActionCallbacks
 from .gauss_action_callbacks import GaussActionCallbacks
@@ -16,8 +18,9 @@ class GraphicalArea(QWidget):
     # Определение сигналов
     mouse_released_signal = pyqtSignal(tuple)
     
-    def __init__(self, graphical_area=None):
-        super().__init__(graphical_area)        
+    def __init__(self, config, graphical_area=None):
+        super().__init__(graphical_area)
+        self.config = config      
         # Создание фигуры и осей для графика
         self.figure, self.ax = plt.subplots()
         self.canvas = FigureCanvas(self.figure)        
@@ -70,7 +73,12 @@ class GraphicalArea(QWidget):
     def plot_data(self, df, column_names):        
         self.ax.clear()
         self.x_data = df[column_names[0]]
-        self.y_data = df[column_names[1]]
+        self.y_data = signal.savgol_filter(
+            df[column_names[1]], 
+            window_length=self.config.Savitzky_df['window_length'].astype(int).item(),
+            polyorder=self.config.Savitzky_df['polyorder'].astype(int).item(), 
+            mode=self.config.Savitzky_df['Savitzky_mode'].astype(str).item()) 
+        logger.debug(f"Значения Savitzky_df в plot_data: {self.config.Savitzky_df}")       
         # Построение графика по заданным данным
         self.ax.plot(self.x_data, self.y_data)          
         self.canvas.draw()
