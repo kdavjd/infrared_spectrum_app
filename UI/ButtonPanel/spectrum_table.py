@@ -7,8 +7,7 @@ from logger_config import logger
 class SpectrumTable(QTableView):
     def __init__(self):
         super().__init__()
-        self.setFixedHeight(300)
-        #self.setVerticalScrollBarPolicy(QAbstractScrollArea.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setFixedHeight(300)        
 
     @pyqtSlot(pd.DataFrame)
     def update_table(self, dataframe):

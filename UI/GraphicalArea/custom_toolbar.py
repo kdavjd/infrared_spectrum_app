@@ -1,14 +1,19 @@
 from PyQt6.QtGui import QIcon, QAction
 from PyQt6.QtCore import pyqtSignal
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from config import SpectrumConfig
+import pandas as pd
+
 
 class CustomToolbar(NavigationToolbar):
     restore_df_plot_signal = pyqtSignal()
     gauss_action_signal = pyqtSignal()
+    integral_action_signal = pyqtSignal(pd.DataFrame)
     
     def __init__(self, canvas, parent):
         super().__init__(canvas, parent)
-        self.create_actions()
+        self.config = SpectrumConfig()
+        self.create_actions()        
 
     def create_actions(self):
         self.integral_action = self.add_action('icons\\integral_icon.png', 'integral')
@@ -25,6 +30,7 @@ class CustomToolbar(NavigationToolbar):
     def toggle_action(self, action_name):
         if action_name == 'integral':
             self.activate_action(self.integral_action, [self.gauss_action])
+            self.integral_action_signal.emit(self.config.Savitzky_df)
         elif action_name == 'gauss':
             self.activate_action(self.gauss_action, [self.integral_action])
         elif action_name == 'df_plot':

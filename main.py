@@ -17,6 +17,8 @@ class Main(QMainWindow):
         self.setWindowTitle('Spectrum Analysis Tool')
         self.spectrum_data_frame.spectrum_loaded_signal.connect(
             self.ui.button_panel.spectrum_table.update_table)
+        self.ui.graphical_area.toolbar.integral_action_signal.connect(
+            self.ui.button_panel.spectrum_table.update_table)
         self.spectrum_data_frame.plot_spectrum_signal.connect(
             self.ui.graphical_area.plot_data)
         self.ui.graphical_area.mouse_released_signal.connect(

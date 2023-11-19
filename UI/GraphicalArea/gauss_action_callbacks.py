@@ -47,13 +47,27 @@ class GaussActionCallbacks:
                 lambda row: self.graphical_area.ax.plot(
                     self.x_data, self.gaussian(self.x_data, row['Height'], row['Position'], row['Width'])
                     ), axis=1)          
-            self.graphical_area.ax.plot(self.x_data, self.add_cumulitive_gauss_func())
+            self.graphical_area.ax.plot(self.x_data, self.cumulitive_gauss_func())
             self.graphical_area.canvas.draw()
             self.gaussian_drawn = False            
     
-    def add_cumulitive_gauss_func(self):
+    def cumulitive_gauss_func(self):
         logger.debug(f"Данные gaussian_params в функции кумулятивной линии: {self.gaussian_params}")        
         return self.gaussian_params.apply(lambda x: self.gaussian(self.x_data, *x), axis=1).sum()
+    
+    @staticmethod
+    def fit_function(x, *params):
+        return GaussActionCallbacks.peaks(x, params)
+
+    @staticmethod
+    def peaks(x: np.array, params: tuple) -> np.array:
+        y = np.zeros_like(x)
+        i = 0
+        h = params[3*i]
+        z = params[3*i+1]
+        w = params[3*i+2]            
+        y = y + GaussActionCallbacks.gaussian(x, h, z, w)
+        return y
     
     @staticmethod
     def gaussian(x: np.ndarray, h: float, z: float, w: float) -> np.ndarray:             
