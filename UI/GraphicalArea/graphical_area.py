@@ -69,7 +69,9 @@ class GraphicalArea(QWidget):
     @pyqtSlot(pd.DataFrame, list)
     def plot_data(self, df, column_names):        
         self.ax.clear()
+        self.x_data = df[column_names[0]]
+        self.y_data = df[column_names[1]]
         # Построение графика по заданным данным
-        self.ax.plot(df[column_names[0]], df[column_names[1]],)          
+        self.ax.plot(self.x_data, self.y_data)          
         self.canvas.draw()
 

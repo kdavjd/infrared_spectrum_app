@@ -12,13 +12,20 @@ class Main(QMainWindow):
         super().__init__()
         self.spectrum_data_frame = SpectrumDataFrame()      
         
-        self.ui = UI(self.spectrum_data_frame)
+        self.ui = UI(self.spectrum_data_frame)        
         self.setCentralWidget(self.ui)
         self.setWindowTitle('Spectrum Analysis Tool')
-        self.spectrum_data_frame.spectrum_loaded_signal.connect(self.ui.button_panel.spectrum_table.update_table)
-        self.spectrum_data_frame.plot_spectrum_signal.connect(self.ui.graphical_area.plot_data)
-        self.ui.graphical_area.mouse_released_signal.connect(self.spectrum_data_frame.subctract_slice_background)
-        self.ui.graphical_area.toolbar.restore_df_plot_signal.connect(self.spectrum_data_frame.plot_spectrum)
+        self.spectrum_data_frame.spectrum_loaded_signal.connect(
+            self.ui.button_panel.spectrum_table.update_table)
+        self.spectrum_data_frame.plot_spectrum_signal.connect(
+            self.ui.graphical_area.plot_data)
+        self.ui.graphical_area.mouse_released_signal.connect(
+            self.spectrum_data_frame.subctract_slice_background)
+        self.ui.graphical_area.toolbar.restore_df_plot_signal.connect(
+            self.spectrum_data_frame.plot_spectrum)
+        self.ui.graphical_area.toolbar.restore_df_plot_signal.connect(
+            self.ui.graphical_area.gauss_callbacks.reset_gaussian_params)
+        
         
 def main():
     app = QApplication(sys.argv)
