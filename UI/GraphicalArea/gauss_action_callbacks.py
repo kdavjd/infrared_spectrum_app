@@ -48,6 +48,13 @@ class GaussActionCallbacks:
                     self.x_data, self.gaussian(self.x_data, row['Height'], row['Position'], row['Width'])
                     ), axis=1)          
             self.graphical_area.ax.plot(self.x_data, self.cumulitive_gauss_func())
+            # Добавляем значение интеграла каждой функции
+            for index, row in self.gaussian_params.iterrows():
+                gauss_curve = self.gaussian(self.x_data, row['Height'], row['Position'], row['Width'])
+                integral_value = np.trapz(gauss_curve, self.x_data)
+                self.graphical_area.ax.text(0.05, 0.25 - index * 0.03, f"{row['Position']:.2f}, Площадь: {integral_value:.2f}",
+                                            transform=self.graphical_area.ax.transAxes, fontsize=8, verticalalignment='top',
+                                            bbox=dict(facecolor='white', alpha=0.5, edgecolor='none'))
             self.graphical_area.canvas.draw()
             self.gaussian_drawn = False            
     

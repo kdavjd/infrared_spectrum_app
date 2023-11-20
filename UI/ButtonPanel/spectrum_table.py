@@ -14,7 +14,8 @@ class SpectrumTable(QTableView):
     def update_table(self, dataframe):
         logger.debug('Сигнал о новой таблице получен')
         self.spectrum_model = PandasModel(dataframe)
-        self.spectrum_model.data_changed_signal.connect(
-            self.config.update_config
-        )
+        if 'window_length' in dataframe.columns:
+            self.spectrum_model.data_changed_signal.connect(
+                self.config.update_config
+            )
         self.setModel(self.spectrum_model)
