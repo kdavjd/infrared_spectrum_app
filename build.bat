@@ -22,7 +22,7 @@ python -m pip install pyinstaller pyinstaller-hooks-contrib
 
 rem Pack application to exe
 echo [INFO] Build and pack exe file
-pyinstaller --onefile --noconsole --noconfirm --collect-data scienceplots --name %app_name% main.py
+pyinstaller --onefile --noconsole --noconfirm --collect-data scienceplots --add-data icons:icons --name %app_name% main.py
 
 rem Next line optional
 echo [INFO] Execution finished
