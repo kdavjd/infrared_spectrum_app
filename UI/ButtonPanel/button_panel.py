@@ -1,7 +1,5 @@
 from PyQt6.QtWidgets import QVBoxLayout, QWidget
-from PyQt6.QtCore import pyqtSignal
 from .load_button import LoadButton
-from .print_button import PrintButton
 from .spectrum_table import SpectrumTable
 
 class ButtonPanel(QWidget):
@@ -12,12 +10,10 @@ class ButtonPanel(QWidget):
         button_layout = QVBoxLayout()
 
         # Создаем кнопки
-        self.load_button = LoadButton(spectrum_data_frame)
-        self.print_button = PrintButton()
+        self.load_button = LoadButton(spectrum_data_frame)        
 
         # Добавляем кнопки в макет
-        button_layout.addWidget(self.load_button)
-        button_layout.addWidget(self.print_button)
+        button_layout.addWidget(self.load_button)        
 
         # Создаем макет для таблицы
         table_layout = QVBoxLayout()

@@ -4,6 +4,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 import scienceplots
 import pandas as pd
+import numpy as np
 from scipy import signal
 from config import SpectrumConfig
 from .custom_toolbar import CustomToolbar
@@ -64,9 +65,29 @@ class GraphicalArea(QWidget):
     
     def on_mouse_release(self, event):
         if self.toolbar.integral_action.isChecked() and event.inaxes:
-            self.integral_callbacks.on_release(event)
+            self.integral_callbacks.on_release(event)            
         if self.toolbar.gauss_action.isChecked() and event.inaxes:
             self.gauss_callbacks.on_release(event)
+        self.display_integral_value(event)          
+    
+    def display_integral_value(self, event):
+        # Проверяем, что обе координаты x не None
+        if self.press_x is not None and event.xdata is not None:
+            # Определяем начальную и конечную точки для интегрирования
+            start_x = min(self.press_x, event.xdata)
+            end_x = max(self.press_x, event.xdata)            
+            # Выбираем данные для интегрирования
+            mask = (self.x_data >= start_x) & (self.x_data <= end_x)
+            x_selected = self.x_data[mask]
+            y_selected = self.y_data[mask]
+            # Вычисляем интеграл
+            integral_value = np.trapz(y_selected, x_selected)
+            # Отображаем значение интеграла на графике
+            self.ax.text(0.95, 0.05, f'Площадь: {integral_value:.2f}',
+                         verticalalignment='bottom', horizontalalignment='right',
+                         transform=self.ax.transAxes, fontsize=8, bbox=dict(facecolor='white', alpha=0.5))
+            # Перерисовываем холст
+            self.canvas.draw()
     
     # Слот для отображения данных на графике
     @pyqtSlot(pd.DataFrame, list)
