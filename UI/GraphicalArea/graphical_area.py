@@ -65,10 +65,10 @@ class GraphicalArea(QWidget):
     
     def on_mouse_release(self, event):
         if self.toolbar.integral_action.isChecked() and event.inaxes:
-            self.integral_callbacks.on_release(event)            
+            self.integral_callbacks.on_release(event)
+            self.display_integral_value(event)             
         if self.toolbar.gauss_action.isChecked() and event.inaxes:
             self.gauss_callbacks.on_release(event)
-        self.display_integral_value(event)          
     
     def display_integral_value(self, event):
         # Проверяем, что обе координаты x не None
