@@ -3,7 +3,7 @@ from .load_button import LoadButton
 from .spectrum_table import SpectrumTable
 
 class ButtonPanel(QWidget):
-    def __init__(self, spectrum_data_frame, config):
+    def __init__(self, spectrum_data_frame, config, gaussian_params):
         super().__init__()
 
         # Создаем макет для кнопок
@@ -17,7 +17,7 @@ class ButtonPanel(QWidget):
 
         # Создаем макет для таблицы
         table_layout = QVBoxLayout()
-        self.spectrum_table = SpectrumTable(config)
+        self.spectrum_table = SpectrumTable(config, gaussian_params)
         table_layout.addWidget(self.spectrum_table)
 
         # Создаем основной макет

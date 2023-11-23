@@ -16,11 +16,13 @@ plt.style.use(['science', 'no-latex', 'nature', 'grid'])
 class GraphicalArea(QWidget):
     
     # Определение сигналов
+    gauss_released_signal = pyqtSignal(pd.DataFrame)
     mouse_released_signal = pyqtSignal(tuple)
     
-    def __init__(self, config, graphical_area=None):
+    def __init__(self, config, gaussian_params, graphical_area=None):
         super().__init__(graphical_area)
-        self.config = config      
+        self.config = config
+        self.gaussian_params = gaussian_params
         # Создание фигуры и осей для графика
         self.figure, self.ax = plt.subplots()
         self.canvas = FigureCanvas(self.figure)        
@@ -67,7 +69,12 @@ class GraphicalArea(QWidget):
             self.integral_callbacks.on_release(event)                       
         if self.toolbar.gauss_action.isChecked() and event.inaxes:
             self.gauss_callbacks.on_release(event) 
-    
+            self.gauss_released_signal.emit(self.gaussian_params.gaussian_df)
+            
+    def draw_curves(self):
+        logger.debug("Сигнал об отрисовке кривых получен")
+        self.gauss_callbacks.draw_gaussian_curves()
+        
     # Слот для отображения данных на графике
     @pyqtSlot(pd.DataFrame, list)
     def plot_data(self, df, column_names):        

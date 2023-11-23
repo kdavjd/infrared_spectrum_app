@@ -10,12 +10,13 @@ from resources import resource_path
 
 class CustomToolbar(NavigationToolbar):
     restore_df_plot_signal = pyqtSignal()
-    gauss_action_signal = pyqtSignal()
+    gauss_action_signal = pyqtSignal(pd.DataFrame)
     integral_action_signal = pyqtSignal(pd.DataFrame)
 
-    def __init__(self, canvas, parent):
-        super().__init__(canvas, parent)
+    def __init__(self, canvas, graphical_area):
+        super().__init__(canvas, graphical_area)
         self.config = SpectrumConfig()
+        self.gaussian_params = graphical_area.gaussian_params
         self.create_actions()
 
     def create_actions(self):
@@ -36,6 +37,7 @@ class CustomToolbar(NavigationToolbar):
             self.integral_action_signal.emit(self.config.Savitzky_df)
         elif action_name == 'gauss':
             self.activate_action(self.gauss_action, [self.integral_action])
+            self.gauss_action_signal.emit(self.gaussian_params.gaussian_df)
         elif action_name == 'df_plot':
             self.restore_df_plot_signal.emit()
             self.deactivate_all_actions()
