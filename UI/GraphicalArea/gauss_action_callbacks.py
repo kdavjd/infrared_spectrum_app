@@ -1,15 +1,16 @@
 import numpy as np
 import pandas as pd
 from PyQt6.QtCore import pyqtSlot
+from .gaussian_params import GaussianParams
 from logger_config import logger
 
 class GaussActionCallbacks:
     def __init__(self, graphical_area):
         self.graphical_area = graphical_area
-        self.gaussian_params = pd.DataFrame(columns=['Height', 'Position', 'Width'])
+        self.gaussian_params = GaussianParams()
 
     def reset_gaussian_params(self):
-        self.gaussian_params = pd.DataFrame(columns=['Height', 'Position', 'Width'])
+        self.gaussian_params.reset_df()
         logger.debug(f"Данные gaussian_params сброшены: {self.gaussian_params}")
     
     def on_press(self, event):
@@ -37,19 +38,19 @@ class GaussActionCallbacks:
             new_row = pd.DataFrame({'Height': [event.ydata],
                                     'Position': [self.press_x],
                                     'Width': [2 * abs(self.press_x - event.xdata)]})
-            self.gaussian_params = pd.concat([self.gaussian_params, new_row], ignore_index=True)
+            self.gaussian_params.concat_new_gauusian(new_row)
             logger.debug(
                 f"Событие отпуска мыши: высота={event.ydata}, позиция={self.press_x}, ширина={2 * abs(self.press_x - event.xdata)}")
             # Перерисовываем все кривые на осях
             self.graphical_area.ax.clear()
             self.graphical_area.ax.plot(self.graphical_area.x_data, self.graphical_area.y_data)
-            self.gaussian_params.apply(
+            self.gaussian_params.gaussian_df.apply(
                 lambda row: self.graphical_area.ax.plot(
                     self.x_data, self.gaussian(self.x_data, row['Height'], row['Position'], row['Width'])
                     ), axis=1)          
             self.graphical_area.ax.plot(self.x_data, self.cumulitive_gauss_func())
             # Добавляем значение интеграла каждой функции
-            for index, row in self.gaussian_params.iterrows():
+            for index, row in self.gaussian_params.gaussian_df.iterrows():
                 gauss_curve = self.gaussian(self.x_data, row['Height'], row['Position'], row['Width'])
                 integral_value = np.trapz(gauss_curve, self.x_data)
                 self.graphical_area.ax.text(0.05, 0.25 - index * 0.03, f"{row['Position']:.2f}, Площадь: {integral_value:.2f}",
@@ -59,8 +60,8 @@ class GaussActionCallbacks:
             self.gaussian_drawn = False            
     
     def cumulitive_gauss_func(self):
-        logger.debug(f"Данные gaussian_params в функции кумулятивной линии: {self.gaussian_params}")        
-        return self.gaussian_params.apply(lambda x: self.gaussian(self.x_data, *x), axis=1).sum()
+        logger.debug(f"Данные gaussian_params в функции кумулятивной линии: {self.gaussian_params.gaussian_df}")        
+        return self.gaussian_params.gaussian_df.apply(lambda x: self.gaussian(self.x_data, *x), axis=1).sum()
     
     @staticmethod
     def fit_function(x, *params):
