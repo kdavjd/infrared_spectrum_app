@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, QAbstractTableModel, pyqtSignal
+from PyQt6.QtCore import Qt, QAbstractTableModel, pyqtSignal, QModelIndex
 from logger_config import logger
 import pandas as pd
 
@@ -62,6 +62,29 @@ class PandasModel(QAbstractTableModel):
             if role == Qt.ItemDataRole.DisplayRole:
                 return str(self._data.iloc[index.row(), index.column()])
         return None
+    
+    def removeRow(self, row, parent=None):
+        """
+        Удаляет строку из DataFrame.
+
+        Args:
+            row (int): номер строки для удаления.
+            parent (QModelIndex, optional): родительский индекс (не используется).
+
+        Returns:
+            bool: True, если строка успешно удалена, иначе False.
+        """
+        # Используем QModelIndex(), чтобы указать отсутствие родителя
+        self.beginRemoveRows(QModelIndex(), row, row)
+        try:
+            self._data = self._data.drop(self._data.index[row])
+            self.endRemoveRows()
+            self.data_changed_signal.emit(self._data)
+            return True
+        except Exception as e:
+            logger.error(f"Ошибка при удалении строки: {e}")
+            self.endRemoveRows()
+            return False
 
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         """
