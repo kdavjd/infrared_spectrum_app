@@ -48,8 +48,11 @@ class IntegralActionCallbacks:
         y_selected = self.graphical_area.y_data[mask]
         # Вычисляем интеграл
         integral_value = np.trapz(y_selected, x_selected)
-        # Отображаем значение интеграла на графике
-        self.graphical_area.ax.text(0.95, 0.05, f'Площадь: {integral_value:.2f}',
+        # Находим минимальное значение y и соответствующее значение x
+        min_index = np.argmin(y_selected)
+        min_x = x_selected.iloc[min_index]  # Использование iloc для доступа по позиции
+        # Отображаем значение интеграла и минимального значения x на графике
+        self.graphical_area.ax.text(0.95, 0.05, f'Площадь: {integral_value:.2f}\nМинимум: {min_x:.2f}',
                         verticalalignment='bottom', horizontalalignment='right',
                         transform=self.graphical_area.ax.transAxes, fontsize=8, bbox=dict(facecolor='white', alpha=0.5))
         # Перерисовываем холст
